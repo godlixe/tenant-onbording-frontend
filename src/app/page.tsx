@@ -26,10 +26,12 @@ import { Loader2 } from "lucide-react";
 import { OrganizationContext } from "@/providers/OrganizationProvider";
 import { AppList } from "./components/Product";
 import LoginDialog from "@/components/LoginDialog";
+import { redirect, usePathname, useRouter } from "next/navigation";
 
 export default function Home() {
 
   const [apps, setApps] = useState([]);
+  const router = useRouter();
 
   type App = {
     id: number;
@@ -89,9 +91,7 @@ export default function Home() {
 
   if (!userInfo) {
     return (
-      <div className="flex items-center justify-center">
-        <LoginDialog/>
-      </div>
+      router.push('/login')
     );
   }
 
@@ -107,10 +107,10 @@ export default function Home() {
     <div>
       <div>
         <p className="p-5 pb-0 font-bold">
-          Recently Added
+          Bought Products
         </p>
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5">
-          {apps.slice(0, 4).map((app: App) => (
+          {/* {apps.slice(0, 0).map((app: App) => (
             <AppList
               app={app}
               key={app.name}
@@ -118,7 +118,8 @@ export default function Home() {
               width={150}
               height={150}
             />
-          ))}
+          ))} */}
+          You have not bought any products yet...
         </div>
       </div>
       <div>

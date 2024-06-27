@@ -1,8 +1,9 @@
 "use client";
 
 import { parseJwt } from "@/lib/parseJwt";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import { createContext, useEffect, useState } from "react";
+import { toast } from "sonner"
 
 type UserInfo = {
   sub: string;
@@ -12,9 +13,16 @@ type UserInfo = {
   picture: string;
 };
 
-
 interface LoginParams {
   email: string;
+  password: string;
+}
+
+
+interface RegisterParams {
+  email: string;
+  username: string;
+  name: string;
   password: string;
 }
 
@@ -23,6 +31,7 @@ type AuthContextType = {
   token: string | null;
   login: (params: LoginParams) => void;
   logout: () => void;
+  register: (params: RegisterParams) => void,
   userInfo: UserInfo | null;
 };
 
@@ -30,6 +39,7 @@ export const AuthContext = createContext<AuthContextType>({
   token: null,
   login: () => { },
   logout: () => { },
+  register: () => { },
   userInfo: null,
 });
 
@@ -40,7 +50,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const pathname = usePathname();
-
+  const router = useRouter();
   // const login = () => {
   //   fetch(`${process.env.NEXT_PUBLIC_IAM_HOST}/login`, {
   //     method: "GET",
@@ -57,7 +67,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const login = process.env.INTEGRATED_MODE == "false" ?
     ({ email, password }: LoginParams) => {
-      fetch(`${process.env.NEXT_PUBLIC_IAM_HOST}/auth/login`, {
+      fetch(`${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,11 +78,13 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         .then((data) => {
           if (data.data) {
             localStorage.setItem("token", data.data)
+            router.push("/")
           } else {
             console.error(data.error);
           }
         });
     } : () => {
+      console.log(process.env.INTEGRATED_MODE);
       fetch(`${process.env.NEXT_PUBLIC_IAM_HOST}/login`, {
         method: "GET",
       })
@@ -85,6 +97,31 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
           }
         });
     };
+
+  const register = ({ email, username, name, password }: RegisterParams) => {
+    fetch(`${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, username, name, password }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          toast.success("Successfully Registered", {
+            description: "redirecting you to home page."
+          })
+          router.push('/login');
+        } else {
+          let data = res.json()
+          toast.error("Failed to Register", {
+            description: "",
+          })
+          return
+        }
+      })
+
+  }
 
 
   const logout = process.env.INTEGRATED_MODE == "false" ?
@@ -116,7 +153,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     if (token) {
       setToken(token);
       const getMe = process.env.INTEGRATED_MODE == "false" ? () => {
-        fetch(`${process.env.NEXT_PUBLIC_IAM_HOST}/auth/me`, {
+        fetch(`${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/auth/me`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -141,7 +178,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
       } : () => {
 
         const { sub, name, email, picture } = parseJwt(token);
-          setUserInfo({ user_id: "", name: name, email: email, sub: sub, picture: picture });
+        setUserInfo({ user_id: "", name: name, email: email, sub: sub, picture: picture });
       }
 
       getMe()
@@ -151,7 +188,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ login, logout, token, userInfo }}>
+    <AuthContext.Provider value={{ login, logout, register, token, userInfo }}>
       {children}
     </AuthContext.Provider>
   );

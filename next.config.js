@@ -5,8 +5,15 @@ const nextConfig = {
         domains: [
             'images.unsplash.com',
             'portal.its.ac.id',
+            'storage.googleapis.com',
         ],
     },
+    env: {
+        "NEXT_PUBLIC_IAM_HOST": process.env.NEXT_PUBLIC_IAM_HOST,
+        "NEXT_PUBLIC_BILLING_HOST": process.env.NEXT_PUBLIC_BILLING_HOST,
+        "NEXT_PUBLIC_ONBOARDING_HOST": process.env.NEXT_PUBLIC_ONBOARDING_HOST,
+        "INTEGRATED_MODE": process.env.INTEGRATED_MODE,
+    }
 };
 
 module.exports = nextConfig;

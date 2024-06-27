@@ -117,25 +117,32 @@ export function AppList({
           const data = await response.json();
 
           let products: Product[] = []
-          console.log("PRICE")
-          data.data.forEach((resProduct: OnboardingProductResponse) => {
-            let price: Price = {
-              id: resProduct.id,
-              price_value: resProduct.price,
-              recurrence: "monthly"
-            }
+          data.data.forEach(resProduct => {
+            
+            let prices: Price[] = []
+            
+            resProduct.price.forEach(resPrice => {  
+              let price: Price = {
+                id: resPrice.id,
+                price_value: resPrice.price,
+                recurrence: resPrice.reccurence
+              }
+
+              prices.push(price);
+            });
 
             let product: Product = {
               id: resProduct.id,
               app_id: resProduct.app_id,
               app: null,
               tier_name: resProduct.tier_name,
-              prices: [price],
+              prices: prices,
             }
 
             products.push(product)
           });
 
+          console.log("PRODUCTS", products);
           setProducts(products);
 
         } catch (error) {
@@ -180,7 +187,7 @@ export function AppList({
       description: "Deployment on process, please wait up to 10 minutes."
     })
   }
-
+  console.log(selectedProduct?.prices);
   return (
     <>
       {alert && (

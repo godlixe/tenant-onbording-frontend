@@ -20,14 +20,17 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { AuthContext } from "@/providers/AuthProvider";
+import { register } from "module";
 
-const LoginDialog: React.FC = () => {
-    const { userInfo, login, logout } = useContext(AuthContext);
+const RegisterDialog: React.FC = () => {
+    const { userInfo, login, logout, register } = useContext(AuthContext);
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [name, setName] = useState("");
     const [password, setPassword] = useState("");
 
     function handleSubmit() {
-        login({ email, password })
+        register({ email, username, name, password })
     }
 
     return (
@@ -35,12 +38,20 @@ const LoginDialog: React.FC = () => {
 
             <Card className="w-[350px] items-center">
                 <CardHeader>
-                    <CardTitle>Login</CardTitle>
-                    <CardDescription>Login to SaaS Tenant Onboarding.</CardDescription>
+                    <CardTitle>Register</CardTitle>
+                    <CardDescription>Register to SaaS Tenant Onboarding.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form>
                         <div className="grid w-full items-center gap-4">
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="password">Name</Label>
+                                <Input id="name" placeholder="Name" onChange={(e) => { setName(e.target.value) }} />
+                            </div>
+                            <div className="flex flex-col space-y-1.5">
+                                <Label htmlFor="password">Username</Label>
+                                <Input id="name" placeholder="Username" onChange={(e) => { setUsername(e.target.value) }} />
+                            </div>
                             <div className="flex flex-col space-y-1.5">
                                 <Label htmlFor="name">Email</Label>
                                 <Input id="name" placeholder="Email" value={email} onChange={(e) => { setEmail(e.target.value) }} />
@@ -53,12 +64,12 @@ const LoginDialog: React.FC = () => {
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button variant="outline">Register</Button>
-                    <Button onClick={handleSubmit}>Login</Button>
+                    <Button variant="outline">Cancel</Button>
+                    <Button onClick={handleSubmit}>Register</Button>
                 </CardFooter>
             </Card>
         </div>
     );
 };
 
-export default LoginDialog;
+export default RegisterDialog;
