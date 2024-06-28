@@ -20,14 +20,21 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { AuthContext } from "@/providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const LoginDialog: React.FC = () => {
     const { userInfo, login, logout } = useContext(AuthContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const router = useRouter();
+
     function handleSubmit() {
         login({ email, password })
+    }
+
+    function handleRegister() {
+        router.push('/register')
     }
 
     return (
@@ -53,7 +60,7 @@ const LoginDialog: React.FC = () => {
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button variant="outline">Register</Button>
+                    <Button onClick={handleRegister} variant="outline">Register</Button>
                     <Button onClick={handleSubmit}>Login</Button>
                 </CardFooter>
             </Card>

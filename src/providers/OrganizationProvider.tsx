@@ -25,7 +25,7 @@ export const OrganizationContext = createContext<OrganizationContextType>({
   organizations: [],
   selectedOrganization: null,
   membershipLevel: null,
-  setSelectedOrganization: () => {},
+  setSelectedOrganization: () => { },
 });
 
 type Props = {
@@ -42,6 +42,7 @@ const OrganizationProvider: React.FC<Props> = ({ children }) => {
       };
     }) || [];
 
+  console.log(organizations);
   const [selectedOrganization, setSelectedOrganization] =
     useState<Organization | null>(null);
 
