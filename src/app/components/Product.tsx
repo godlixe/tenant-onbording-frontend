@@ -63,6 +63,13 @@ export function AppList({
     recurrence: string | null;
   }
 
+  type BillingPrice = {
+    id: string | null;
+    price: number;
+    recurrence: string | null;
+  }
+
+
   type Product = {
     id: string;
     app_id: number;
@@ -77,6 +84,14 @@ export function AppList({
     app: App | null;
     tier_name: string;
     price: number;
+  }
+
+  type BillingProductResponse = {
+    id: string;
+    app_id: number;
+    app: App | null;
+    tier_name: string;
+    price: BillingPrice[];
   }
 
   useEffect(() => {
@@ -117,15 +132,15 @@ export function AppList({
           const data = await response.json();
 
           let products: Product[] = []
-          data.data.forEach(resProduct => {
-            
+          data.data.forEach((resProduct: BillingProductResponse) => {
+
             let prices: Price[] = []
-            
-            resProduct.price.forEach(resPrice => {  
+
+            resProduct.price.forEach((resPrice: BillingPrice) => {
               let price: Price = {
                 id: resPrice.id,
                 price_value: resPrice.price,
-                recurrence: resPrice.reccurence
+                recurrence: resPrice.recurrence
               }
 
               prices.push(price);
