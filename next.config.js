@@ -13,7 +13,8 @@ const nextConfig = {
         "NEXT_PUBLIC_BILLING_HOST": process.env.NEXT_PUBLIC_BILLING_HOST,
         "NEXT_PUBLIC_ONBOARDING_HOST": process.env.NEXT_PUBLIC_ONBOARDING_HOST,
         "INTEGRATED_MODE": process.env.INTEGRATED_MODE,
-    }
+    },
+    output: 'standalone'
 };
 
 module.exports = nextConfig;
