@@ -10,6 +10,7 @@ const fetcher = (url: string) =>
     },
   })
     .then((res) => {
+      console.log(checkIntegratedMode());
       return res.json()
     })
     .catch((error) => {

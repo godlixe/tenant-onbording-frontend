@@ -33,14 +33,14 @@ type Props = {
 };
 
 const OrganizationProvider: React.FC<Props> = ({ children }) => {
-  const { data, mutate } = useSWR("/organization", fetcher);
-  const organizations =
+  const { data } = useSWR("/organization", fetcher);
+  const organizations = (Array.isArray(data)) ?
     data?.map((org: any) => {
       return {
         organizationId: org.organization_id,
         name: org.name,
       };
-    }) || [];
+    }) || [] : [];
 
   console.log(organizations);
   const [selectedOrganization, setSelectedOrganization] =

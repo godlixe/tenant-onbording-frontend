@@ -22,15 +22,17 @@ import React from "react";
 import { useForm } from "@tanstack/react-form";
 import type { FieldApi } from "@tanstack/react-form";
 import Spinner from "@/components/ui/spinner";
-import { Loader2 } from "lucide-react";
+import { icons, Loader2 } from "lucide-react";
 import { OrganizationContext } from "@/providers/OrganizationProvider";
 import { AppList } from "./components/Product";
 import LoginDialog from "@/components/LoginDialog";
 import { redirect, usePathname, useRouter } from "next/navigation";
+import checkIntegratedMode from "@/lib/framework";
+import App from "next/app";
 
 export default function Home() {
 
-  const [apps, setApps] = useState([]);
+  const [apps, setApps] = useState<App[]>([]);
   const router = useRouter();
 
   type App = {
@@ -39,16 +41,52 @@ export default function Home() {
     icon: string;
   }
 
+  type BillingAppsResponse = {
+    id: number;
+    name: string;
+    image_url: string;
+  }
+
+
   useEffect(() => {
-    const fetchApps = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/app");
-        const data = await response.json();
-        setApps(data.data);
-      } catch (error) {
-        console.error("error fetching apps: ", error);
-      }
-    }
+    const fetchApps = checkIntegratedMode() == false ?
+      async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/app`
+          );
+          const data = await response.json();
+
+          setApps(data.data);
+        } catch (error) {
+          console.error("error fetching apps: ", error);
+        }
+      } :
+      async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_BILLING_HOST}/api/v1/apps`
+          );
+          const data = await response.json();
+
+          let billingApps: App[] = []
+
+          data.data.forEach((billingApp: BillingAppsResponse) => {
+            let resApp: App = {
+              id: billingApp.id,
+              name: billingApp.name,
+              icon: billingApp.image_url,
+            }
+
+            billingApps.push(resApp)
+          });
+
+          setApps(billingApps);
+        } catch (error) {
+          console.error("error fetching apps: ", error);
+        }
+      };
+
 
     fetchApps();
   }, []);
@@ -110,7 +148,7 @@ export default function Home() {
           Bought Products
         </p>
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5">
-          {/* {apps.slice(0, 0).map((app: App) => (
+          {apps.slice(0, 1).map((app: App) => (
             <AppList
               app={app}
               key={app.name}
@@ -118,8 +156,7 @@ export default function Home() {
               width={150}
               height={150}
             />
-          ))} */}
-          You have not bought any products yet...
+          ))}
         </div>
       </div>
       <div>
@@ -127,7 +164,7 @@ export default function Home() {
           Products
         </p>
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5 w-4/7">
-          {apps.map((app: App) => (
+          {apps.slice(1,4).map((app: App) => (
             <AppList
               app={app}
               key={app.id}

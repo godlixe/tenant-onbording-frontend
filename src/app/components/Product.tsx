@@ -56,6 +56,8 @@ export function AppList({
   const [selectedPrice, setSelectedPrice] = useState<Price | null>(null);
   const [alert, setAlert] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState<boolean | null>(null);
+  const [billingDialogOpen, setBillingDialogOpen] = useState<boolean>(false);
+  const [billingURL, setBillingURL] = useState("")
 
   type Price = {
     id: string | null;
@@ -66,7 +68,7 @@ export function AppList({
   type BillingPrice = {
     id: string | null;
     price: number;
-    recurrence: string | null;
+    reccurence: string | null;
   }
 
 
@@ -140,7 +142,7 @@ export function AppList({
               let price: Price = {
                 id: resPrice.id,
                 price_value: resPrice.price,
-                recurrence: resPrice.recurrence
+                recurrence: resPrice.reccurence
               }
 
               prices.push(price);
@@ -173,6 +175,50 @@ export function AppList({
     setisDialogOpen(open)
   }
 
+  const handleBillingChange = (open: boolean) => {
+    setBillingDialogOpen(open)
+  }
+
+  type TenantData = {
+    tenant_id: string;
+    org_id: string;
+    tenant_name: string;
+  }
+
+  const handlePayment = async (tenantData: TenantData) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BILLING_HOST}/api/v1/jwt/tenants`, {
+        method: "POST", // Changed to POST for creation
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          price_id: selectedPrice?.id,
+          tenant_id: tenantData?.tenant_id,
+          org_id: tenantData?.org_id,
+          tenant_name: userInfo?.name,
+        })
+      });
+      const data = await response.json();
+      if (!data) {
+        console.error(data);
+      } else {
+        setDialogOpen(null)
+        setisDialogOpen(false)
+        console.log(data.data.redirect_url)
+        setBillingURL(data.data.redirect_url)
+        setBillingDialogOpen(true)
+        // setTimeout(() => setAlert(null), 3000); // Hide alert after 3 seconds
+      }
+    } catch (error) {
+      console.error("Error during billing creation:", error);
+      toast.error("Error during billing creation", {
+        description: "An unexpected error occurred, please try again"
+      })
+    }
+  }
+
   const handleSubmit = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/tenant/create`, {
@@ -188,35 +234,36 @@ export function AppList({
         })
       });
       const data = await response.json();
-      if (data.error) {
-        console.error(data.error);
+      if (!data) {
+        console.error(data);
       } else {
         setDialogOpen(null)
         setisDialogOpen(false)
-        setTimeout(() => setAlert(null), 3000); // Hide alert after 3 seconds
+        console.log(data.data)
+        let tenantResponse: TenantData = {
+          tenant_id: data.data.id,
+          org_id: data.data.organization_id,
+          tenant_name: data.name,
+        }
+
+        handlePayment(tenantResponse)
+
+        toast.success("Please pay for product", {
+          description: `Go to: ${billingURL}`
+        })
+
+        // setTimeout(() => setAlert(null), 3000); // Hide alert after 3 seconds
       }
     } catch (error) {
       console.error("Error during tenant creation:", error);
+      toast.error("Error during tenant creation", {
+        description: "An unexpected error occurred, please try again"
+      })
     }
-    toast.success("Product successfully bought", {
-      description: "Deployment on process, please wait up to 10 minutes."
-    })
   }
   console.log(selectedProduct?.prices);
   return (
     <>
-      {alert && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg text-center">
-            <Alert>
-              <AlertTitle>Success!</AlertTitle>
-              <AlertDescription>
-                Please wait for up to 10 minutes for the tenant onboarding.
-              </AlertDescription>
-            </Alert>
-          </div>
-        </div>
-      )}
       <Dialog onOpenChange={handleChange} open={isDialogOpen}>
         <DialogTrigger asChild>
           <div className={cn("flex items-center space-x-4 h-50 hover:bg-gray-200 rounded-lg", className)} {...props}>

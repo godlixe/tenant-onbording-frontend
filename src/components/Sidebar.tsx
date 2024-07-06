@@ -72,7 +72,7 @@ const Sidebar = () => {
               )}
             >
               <Box className="h-4 w-4" />
-              Onboarding
+              Tenant Management
             </Link>
 
             <Link

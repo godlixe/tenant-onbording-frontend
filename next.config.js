@@ -6,6 +6,8 @@ const nextConfig = {
             'images.unsplash.com',
             'portal.its.ac.id',
             'storage.googleapis.com',
+            'encrypted-tbn0.gstatic.com',
+            'cdn-icons-png.flaticon.com',
         ],
     },
     env: {
