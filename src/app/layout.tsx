@@ -13,8 +13,8 @@ import { Suspense } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "User Management",
-  description: "SaaS User Management",
+  title: "Tenant Onboarding",
+  description: "SaaS Tenant Onboarding",
 };
 
 export default function RootLayout({

@@ -29,16 +29,36 @@ import LoginDialog from "@/components/LoginDialog";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import checkIntegratedMode from "@/lib/framework";
 import App from "next/app";
+import { OwnedAppList } from "./components/OwnedProduct";
 
 export default function Home() {
 
   const [apps, setApps] = useState<App[]>([]);
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const { organizations, selectedOrganization } = useContext(OrganizationContext);
   const router = useRouter();
 
   type App = {
     id: number;
     name: string;
     icon: string;
+    frontend_url: string;
+  }
+
+  type Product = {
+    id: string;
+    app_id: string;
+    app: App;
+    tier_name: string;
+    price: number;
+  }
+
+  type Tenant = {
+    id: string;
+    product_id: string;
+    product: Product;
+    name: string;
+    resource_information: JSON;
   }
 
   type BillingAppsResponse = {
@@ -47,6 +67,30 @@ export default function Home() {
     image_url: string;
   }
 
+  useEffect(() => {
+    if (selectedOrganization == null) return;
+
+    const fetchApps =
+      async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/tenant?organization_id=${selectedOrganization?.organizationId}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+          }
+          );
+          const data = await response.json();
+
+          setTenants(data.data);
+        } catch (error) {
+          console.error("error fetching tenants: ", error);
+        }
+      };
+
+
+    fetchApps();
+  }, [selectedOrganization]);
 
   useEffect(() => {
     const fetchApps = checkIntegratedMode() == false ?
@@ -76,6 +120,7 @@ export default function Home() {
               id: billingApp.id,
               name: billingApp.name,
               icon: billingApp.image_url,
+              frontend_url: ""
             }
 
             billingApps.push(resApp)
@@ -89,10 +134,9 @@ export default function Home() {
 
 
     fetchApps();
-  }, []);
+  }, [selectedOrganization]);
 
   const { userInfo } = useContext(AuthContext);
-  const { organizations } = useContext(OrganizationContext);
 
   const [showNewOrgDialog, setShowNewOrgDialog] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -148,10 +192,10 @@ export default function Home() {
           Bought Products
         </p>
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5">
-          {apps.slice(0, 1).map((app: App) => (
-            <AppList
-              app={app}
-              key={app.name}
+          {tenants?.map((tenant: Tenant) => (
+            <OwnedAppList
+              app={tenant.product.app}
+              key={tenant.product.app.name}
               aspectRatio="square"
               width={150}
               height={150}
@@ -164,7 +208,7 @@ export default function Home() {
           Products
         </p>
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5 w-4/7">
-          {apps.slice(1,4).map((app: App) => (
+          {apps.map((app: App) => (
             <AppList
               app={app}
               key={app.id}

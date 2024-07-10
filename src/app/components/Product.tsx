@@ -26,10 +26,12 @@ import {
   AlertTitle,
 } from "@/components/ui/alert"
 import { toast } from "sonner"
+
 interface App {
   id: number;
   name: string;
   icon: string;
+  frontend_url: string;
 }
 
 interface AppProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -70,7 +72,6 @@ export function AppList({
     price: number;
     reccurence: string | null;
   }
-
 
   type Product = {
     id: string;
@@ -264,6 +265,7 @@ export function AppList({
   console.log(selectedProduct?.prices);
   return (
     <>
+
       <Dialog onOpenChange={handleChange} open={isDialogOpen}>
         <DialogTrigger asChild>
           <div className={cn("flex items-center space-x-4 h-50 hover:bg-gray-200 rounded-lg", className)} {...props}>
@@ -308,11 +310,6 @@ export function AppList({
                 </div>
               </DialogTitle>
             </DialogHeader>
-            {/* {selectedProduct && (
-              <div className="ml-auto text-lg font-semibold">
-                <p>${selectedProduct.price.price_value}</p>
-              </div>
-            )} */}
           </div>
           <form>
             <div className="grid w-full items-center gap-4">
