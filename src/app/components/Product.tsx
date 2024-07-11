@@ -210,6 +210,10 @@ export function AppList({
         console.log(data.data.redirect_url)
         setBillingURL(data.data.redirect_url)
         setBillingDialogOpen(true)
+
+        toast.success("Please pay for product", {
+          description: `Go to: ${data.data.redirect_url} or pay at your billing dashboard`
+        })
         // setTimeout(() => setAlert(null), 3000); // Hide alert after 3 seconds
       }
     } catch (error) {
@@ -247,12 +251,7 @@ export function AppList({
           tenant_name: data.name,
         }
 
-        handlePayment(tenantResponse)
-
-        toast.success("Please pay for product", {
-          description: `Go to: ${billingURL}`
-        })
-
+        await handlePayment(tenantResponse)
         // setTimeout(() => setAlert(null), 3000); // Hide alert after 3 seconds
       }
     } catch (error) {
