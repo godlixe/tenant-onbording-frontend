@@ -24,6 +24,7 @@ import { Loader2 } from "lucide-react";
 import { OrganizationContext } from "@/providers/OrganizationProvider";
 import { useRouter } from "next/navigation";
 import { useSWRConfig } from "swr";
+import checkIntegratedMode from "@/lib/framework";
 
 interface Props {
     showDialog: boolean;
@@ -47,7 +48,7 @@ const CreateOrganizationDialog: React.FC<Props> = ({
         onSubmit: async ({ value }) => {
             setIsSubmitting(true);
 
-            fetch(`${process.env.NEXT_PUBLIC_IAM_HOST}/organization`, {
+            fetch(checkIntegratedMode() ? `${process.env.NEXT_PUBLIC_IAM_HOST}/organization` : `${process.env.NEXT_PUBLIC_ONBOARDING_HOST}/organization`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

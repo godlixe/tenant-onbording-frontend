@@ -192,7 +192,7 @@ export default function Home() {
           Bought Products
         </p>
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5">
-          {tenants?.map((tenant: Tenant) => (
+          {tenants && tenants?.map((tenant: Tenant) => (
             <OwnedAppList
               app={tenant.product.app}
               key={tenant.product.app.name}
@@ -201,6 +201,9 @@ export default function Home() {
               height={150}
             />
           ))}
+          {(tenants.length == 0) &&
+            <p>You have not bought any products yet...</p>
+          }
         </div>
       </div>
       <div>

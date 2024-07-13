@@ -26,6 +26,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert"
 import { toast } from "sonner"
+import checkIntegratedMode from "@/lib/framework"
 
 interface App {
   id: number;
@@ -251,7 +252,13 @@ export function AppList({
           tenant_name: data.name,
         }
 
-        await handlePayment(tenantResponse)
+        // handle payment only in integrated mode
+        if (checkIntegratedMode()) await handlePayment(tenantResponse);
+        else {
+          toast.success("Product successfully bought", {
+            description: `Refresh the page to view changes`
+          })
+        }
         // setTimeout(() => setAlert(null), 3000); // Hide alert after 3 seconds
       }
     } catch (error) {

@@ -1,6 +1,7 @@
 "use client";
 
 import fetcher from "@/lib/fetcher";
+import checkIntegratedMode from "@/lib/framework";
 import { parseJwt } from "@/lib/parseJwt";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
@@ -37,7 +38,7 @@ const OrganizationProvider: React.FC<Props> = ({ children }) => {
   const organizations = (Array.isArray(data)) ?
     data?.map((org: any) => {
       return {
-        organizationId: org.organization_id,
+        organizationId: checkIntegratedMode() ? org.organization_id : org.id,
         name: org.name,
       };
     }) || [] : [];
