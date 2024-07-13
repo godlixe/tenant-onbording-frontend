@@ -170,7 +170,7 @@ export function AppList({
       }
 
     if (isDialogOpen) fetchProducts();
-  }, [isDialogOpen]);
+  }, [isDialogOpen, app.id]);
 
   const handleChange = (open: boolean) => {
     if (!open) setSelectedProduct(null)

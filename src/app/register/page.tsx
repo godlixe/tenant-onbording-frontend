@@ -2,7 +2,7 @@
 import RegisterDialog from '@/components/RegisterDialog';
 import React from 'react'
 
-const page = () => {
+const Page = () => {
   return (
     <div>
         <RegisterDialog/>
@@ -10,4 +10,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

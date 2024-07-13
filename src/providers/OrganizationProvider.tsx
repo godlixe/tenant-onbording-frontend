@@ -61,7 +61,7 @@ const OrganizationProvider: React.FC<Props> = ({ children }) => {
       );
       setSelectedOrganization(newOrg || organizations[0]);
     }
-  }, [data]);
+  }, [data, organizations, selectedOrganization]);
 
   useEffect(() => {
     if (selectedOrganization) {
