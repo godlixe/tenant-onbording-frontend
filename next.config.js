@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+    assetPrefix: "/onboarding",
     images: {
         domains: [
             'images.unsplash.com',
