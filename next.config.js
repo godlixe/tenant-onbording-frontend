@@ -2,7 +2,6 @@
 
 const nextConfig = {
     basePath: "/onboarding",
-    assetPrefix: "/onboarding",
     images: {
         domains: [
             'images.unsplash.com',
