@@ -78,9 +78,15 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
         .then((data) => {
           if (data.data) {
             localStorage.setItem("token", data.data)
-            router.push("/")
+            toast.success("Login successfull", {
+              description: "redirecting to home page",
+            })
+            router.push("")
           } else {
             console.error(data.error);
+            toast.error("Failed to login", {
+              description: data.message,
+            })
           }
         });
     } : () => {

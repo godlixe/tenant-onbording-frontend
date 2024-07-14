@@ -36,7 +36,14 @@ interface App {
     frontend_url: string;
 }
 
+interface Tenant {
+    id: string;
+    name: string;
+    status: string;
+}
+
 interface AppProps extends React.HTMLAttributes<HTMLDivElement> {
+    tenant: Tenant
     app: App
     aspectRatio?: "portrait" | "square"
     width?: number
@@ -45,6 +52,7 @@ interface AppProps extends React.HTMLAttributes<HTMLDivElement> {
 
 
 export function OwnedAppList({
+    tenant,
     app,
     aspectRatio = "square",
     width,
@@ -81,6 +89,10 @@ export function OwnedAppList({
                         </div>
                         <div className="text-sm">
                             <h3 className="font-medium leading-none">{app.name}</h3>
+                            <h2 className={`font-bold 
+                                ${tenant.status == "created" ? "text-orange-400" : "text-green-500"}
+                            `}
+                            >{tenant.status}</h2>
                         </div>
                     </div>
                 </DialogTrigger>

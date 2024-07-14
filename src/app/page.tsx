@@ -58,6 +58,7 @@ export default function Home() {
     product_id: string;
     product: Product;
     name: string;
+    status: string;
     resource_information: JSON;
   }
 
@@ -194,6 +195,7 @@ export default function Home() {
         <div className="p-5 grid grid-cols-3 lg:grid-cols-4 gap-5">
           {tenants && tenants?.map((tenant: Tenant) => (
             <OwnedAppList
+              tenant={tenant}
               app={tenant.product.app}
               key={tenant.product.app.name}
               aspectRatio="square"
